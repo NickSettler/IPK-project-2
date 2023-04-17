@@ -141,6 +141,14 @@ std::pair<std::string, std::string> format_ip_addresses(u_char *packet, uint16_t
         inet_ntop(AF_INET6, &ip_header->ip6_src, src_ip, INET6_ADDRSTRLEN);
         inet_ntop(AF_INET6, &ip_header->ip6_dst, dst_ip, INET6_ADDRSTRLEN);
         return std::make_pair(src_ip, dst_ip);
+    } else if (ntohs(ether_type) == ETHERTYPE_ARP) {
+        char src_ip[INET_ADDRSTRLEN];
+        char dst_ip[INET_ADDRSTRLEN];
+
+        inet_ntop(AF_INET, packet + 28, src_ip, INET_ADDRSTRLEN);
+        inet_ntop(AF_INET, packet + 38, dst_ip, INET_ADDRSTRLEN);
+
+        return std::make_pair(src_ip, dst_ip);
     }
 
     return std::make_pair("unknown", "unknown");

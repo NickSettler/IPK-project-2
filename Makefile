@@ -1,5 +1,5 @@
 CXX = g++
-CXX_FLAGS = -Wall -Wextra -Werror -pedantic -lpcap -std=gnu++2a -O3 -g
+CXX_FLAGS = -pedantic -lpcap -std=gnu++2a -O3 -g
 
 TARGET = ipk-sniffer
 SRC = $(wildcard src/*.cpp)

@@ -262,7 +262,17 @@ void sniff(argparse::ArgumentParser *arguments) {
 int main(int argc, char *argv[]) {
     auto *arguments = process_arguments(argc, argv);
 
-    //    print_interfaces();
+    if (argc == 1) {
+        print_interfaces();
+        return 0;
+    }
+
+    auto interface = arguments->get<std::string>("-i");
+
+    if (interface == "-") {
+        print_interfaces();
+        return 0;
+    }
 
     sniff(arguments);
 

@@ -27,9 +27,9 @@ argparse::ArgumentParser *process_arguments(int argc, char **argv) {
                     if (port < 0 || port > 65535) { throw std::runtime_error("Port must be in range 0-65535"); }
 
                     return port;
-                } catch (std::invalid_argument &e) { throw std::runtime_error("Cannot resolve port"); }
-
-                return 0;
+                } catch (std::exception &e) { throw std::runtime_error("Cannot resolve port"); } catch (...) {
+                    throw std::runtime_error("Cannot resolve port");
+                }
             });
 
     program->add_argument("--icmp4").help("Filter by port").default_value(false).implicit_value(true);

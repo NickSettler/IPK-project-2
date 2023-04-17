@@ -251,7 +251,7 @@ void sniff(argparse::ArgumentParser *arguments) {
         subnet_mask = 0;
     }
 
-    pcap_t *handle = pcap_open_live("en0", BUFSIZ, 1, 1000, errbuf);
+    pcap_t *handle = pcap_open_live(device, BUFSIZ, 1, 1000, errbuf);
     if (handle == nullptr) {
         std::cout << "pcap_open_live() failed: " << errbuf << std::endl;
         return;

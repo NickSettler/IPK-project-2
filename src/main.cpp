@@ -129,11 +129,29 @@ std::pair<std::string, std::string> format_ip_addresses(u_char *packet, uint16_t
     return std::make_pair("unknown", "unknown");
 }
 
+std::pair<int, int> *format_ports(const u_char *packet, uint16_t ether_type) {
+    std::pair<int, int> *ports = nullptr;
+
+    uint16_t protocol = ntohs(ether_type);
+
+    if (protocol == ETHERTYPE_IP) {
+        if (packet[23] == IPPROTO_TCP || packet[23] == IPPROTO_UDP) {
+            ports = new std::pair<int, int>(ntohs(*((uint16_t *) (packet + 34))), ntohs(*((uint16_t *) (packet + 36))));
+        }
+    } else if (protocol == ETHERTYPE_IPV6) {
+        if (packet[20] == IPPROTO_TCP || packet[20] == IPPROTO_UDP) {
+            ports = new std::pair<int, int>(ntohs(*((uint16_t *) (packet + 54))), ntohs(*((uint16_t *) (packet + 56))));
+        }
+    }
+
+    return ports;
+}
+
 void print_payload(const u_char *packet, uint32_t size) {
     uint32_t i = 0;
 
     while (i < size) {
-        std::cout << std::hex << std::setfill('0') << std::setw(4) << i << ": ";
+        std::cout << "0x" << std::hex << std::setfill('0') << std::setw(4) << i << ": ";
         for (uint32_t j = 0; j < 16; j++) {
             if (i + j < size) {
                 std::cout << std::hex << std::setfill('0') << std::setw(2) << (int) packet[i + j] << " ";
@@ -164,13 +182,21 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char
     std::cout << "timestamp: " << format_timestamp(header->ts) << std::endl;
     std::cout << "src MAC: " << ether_ntoa((struct ether_addr *) eth_header->ether_shost) << std::endl;
     std::cout << "dst MAC: " << ether_ntoa((struct ether_addr *) eth_header->ether_dhost) << std::endl;
-    std::cout << "frame length: " << header->len << " bytes" << std::endl;
+    std::cout << "frame length: " << std::dec << header->len << " bytes" << std::endl;
+
     std::cout << "src IP: " << ip_addresses.first << std::endl;
     std::cout << "dst IP: " << ip_addresses.second << std::endl;
-    std::cout << "src port: " << ntohs(*(uint16_t *) (packet + 34)) << std::endl;
-    std::cout << "dst port: " << ntohs(*(uint16_t *) (packet + 36)) << std::endl;
 
-    print_payload(packet + 54, header->len - 54);
+    auto ports = format_ports(packet, eth_header->ether_type);
+
+    if (ports != nullptr) {
+        std::cout << "src port: " << ports->first << std::endl;
+        std::cout << "dst port: " << ports->second << std::endl;
+    }
+
+    print_payload(packet, header->len);
+
+    std::cout << std::endl;
 }
 
 void sniff(argparse::ArgumentParser *arguments) {

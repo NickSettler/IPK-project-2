@@ -248,7 +248,9 @@ void sniff(argparse::ArgumentParser *arguments) {
         return;
     }
 
-    pcap_loop(handle, 0, packet_handler, nullptr);
+    int number_of_packets = arguments->get<int>("-n");
+
+    pcap_loop(handle, number_of_packets, packet_handler, nullptr);
 
     pcap_close(handle);
 }

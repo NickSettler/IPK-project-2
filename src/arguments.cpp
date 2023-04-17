@@ -36,7 +36,14 @@ argparse::ArgumentParser *process_arguments(int argc, char **argv) {
     program->add_argument("--igmp").help("Display only IGMP packets").default_value(false).implicit_value(true);
     program->add_argument("--mld").help("Display only MLD packets").default_value(false).implicit_value(true);
 
-    program->add_argument("-n").help("Number of packets to display").default_value(1).metavar("num");
+    program->add_argument("-n")
+            .help("Number of packets to display")
+            .default_value(1)
+            .metavar("num")
+            .action([](const std::string &value) {
+                int num = std::stoi(value);
+                return num;
+            });
 
     try {
         program->parse_args(argc, argv);

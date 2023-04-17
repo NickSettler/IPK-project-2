@@ -191,7 +191,7 @@ dst port: 22
 
 WireShark screenshot with the packet:
 
-![01-port-specified-1-packet.png](tests/tcp/01-port-specified-1-packet.png)
+![01-port-specified-1-packet.png](tests/tcp/01-port-specified-1-packet.jpg)
 
 #### Test case: `tests/arp/01-1-packet`
 
@@ -219,7 +219,7 @@ dst IP: 192.168.1.17
 
 WireShark screenshot with the packet:
 
-![01-arp.png](tests/arp/01-1-packet.png)
+![01-arp.png](tests/arp/01-1-packet.jpg)
 
 #### Test case: `tests/icmp4/01-1-packet`
 
@@ -250,7 +250,7 @@ dst IP: 192.168.1.49
 
 WireShark screenshot with the packet:
 
-![01-icmp4.png](tests/icmp4/01-1-packet.png)
+![01-icmp4.png](tests/icmp4/01-1-packet.jpg)
 
 ## Bibliography
 

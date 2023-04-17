@@ -1,3 +1,8 @@
+/**
+ * IPK project 2 - sniffer
+ * Author: Nikita Moiseev <xmoise01> <xmoise01@stud.fit.vutbr.cz>
+ */
+
 #include <pcap.h>
 #include <chrono>
 #include <netinet/in.h>

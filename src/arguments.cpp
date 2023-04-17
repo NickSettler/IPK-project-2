@@ -1,5 +1,5 @@
 /**
- *
+ * Arguments processing using argparse library http://github.com/p-ranav/argparse
  * @file: arguments.cpp
  * @date: 16.04.2023
  */

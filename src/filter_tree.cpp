@@ -1,5 +1,5 @@
 /**
- *
+ * Filter tree class
  * @file: filter_tree.cpp
  * @date: 16.04.2023
  */

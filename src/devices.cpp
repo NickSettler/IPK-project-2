@@ -1,5 +1,5 @@
 /**
- *
+ * Devices module
  * @file: devices.cpp
  * @date: 16.04.2023
  */

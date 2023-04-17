@@ -30,7 +30,7 @@ void FilterTree::add_child(FilterTree *child) {
 std::vector<FilterTree *> *FilterTree::get_children() const { return children; }
 
 std::string FilterTree::generate_filter() {
-    if (children != nullptr)
+    if (children != nullptr && !children->empty())
         for (auto *child: *children) { child->generate_filter(); }
 
     return process_current_node();
@@ -71,6 +71,7 @@ std::string FilterTree::process_current_node() {
             result.append(" or ");
         }
 
+        result.pop_back();
         result.pop_back();
         result.pop_back();
         result.pop_back();

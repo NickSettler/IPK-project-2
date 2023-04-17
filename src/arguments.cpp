@@ -49,7 +49,6 @@ argparse::ArgumentParser *process_arguments(int argc, char **argv) {
         program->parse_args(argc, argv);
     } catch (const std::runtime_error &err) {
         std::cout << err.what() << std::endl;
-        std::cout << program;
         exit(0);
     }
 

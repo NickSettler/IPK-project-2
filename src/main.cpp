@@ -247,7 +247,13 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char
 void sniff(argparse::ArgumentParser *arguments) {
     auto interface = arguments->get<std::string>("interface");
 
-    is_device_valid(interface);
+    try {
+
+        is_device_valid(interface);
+    } catch (...) {
+        std::cout << "Invalid interface: " << interface << std::endl;
+        exit(1);
+    }
 
     const char *device = interface.c_str();
     char errbuf[PCAP_ERRBUF_SIZE];

@@ -218,7 +218,7 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char
 
 void sniff(argparse::ArgumentParser *arguments) {
     auto interface = arguments->get<std::string>("interface");
-    
+
     is_device_valid(interface);
 
     const char *device = interface.c_str();
@@ -239,8 +239,6 @@ void sniff(argparse::ArgumentParser *arguments) {
 
     struct bpf_program filter {};
     auto filter_exp = generate_filter(arguments);
-    // TODO: remove this
-    std::cout << "Filter string: " << filter_exp << std::endl;
 
     if (pcap_compile(handle, &filter, filter_exp.c_str(), 0, ip) == -1) {
         std::cout << "pcap_compile() failed: " << pcap_geterr(handle) << std::endl;

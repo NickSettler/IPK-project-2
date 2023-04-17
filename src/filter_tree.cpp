@@ -17,10 +17,6 @@ FilterTree::~FilterTree() {
     delete filter;
 }
 
-FILTER_TREE_TYPE FilterTree::get_type() const { return type; }
-
-std::string *FilterTree::get_filter() const { return filter; }
-
 void FilterTree::add_child(FilterTree *child) {
     if (children == nullptr) { children = new std::vector<FilterTree *>(); }
 
@@ -37,8 +33,6 @@ std::string FilterTree::generate_filter() {
 }
 
 std::string FilterTree::process_current_node() {
-    if (type == FILTER_TREE_TYPE_ROOT) { return ""; }
-
     if (type == FILTER_TREE_TYPE_FILTER) { return *filter; }
 
     if (type == FILTER_TREE_TYPE_AND) {

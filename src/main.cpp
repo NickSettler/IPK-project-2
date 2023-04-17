@@ -13,6 +13,11 @@
 #include "devices.h"
 #include "filter_tree.h"
 
+/**
+ * Generate filter string from arguments
+ * @param arguments arguments
+ * @return filter string
+ */
 std::string generate_filter(argparse::ArgumentParser *arguments) {
     auto *filterTree = new FilterTree(FILTER_TREE_TYPE_OR);
 
@@ -105,6 +110,11 @@ std::string generate_filter(argparse::ArgumentParser *arguments) {
     return filterTree->generate_filter();
 }
 
+/**
+ * Format timeval of the packet to RFC3339 timestamp
+ * @param timestamp timeval of the packet
+ * @return RFC3339 timestamp string
+ */
 std::string format_timestamp(const struct timeval &timestamp) {
     auto time = std::chrono::system_clock::from_time_t(timestamp.tv_sec);
     auto in_time_t = std::chrono::system_clock::to_time_t(time);
@@ -125,6 +135,12 @@ std::string format_timestamp(const struct timeval &timestamp) {
     return ss.str();
 }
 
+/**
+ * Format IP addresses of the packet
+ * @param packet packet
+ * @param ether_type ether type
+ * @return pair of source and destination IP addresses
+ */
 std::pair<std::string, std::string> format_ip_addresses(u_char *packet, uint16_t ether_type) {
     if (ntohs(ether_type) == ETHERTYPE_IP) {
         char src_ip[INET_ADDRSTRLEN];
@@ -154,6 +170,12 @@ std::pair<std::string, std::string> format_ip_addresses(u_char *packet, uint16_t
     return std::make_pair("unknown", "unknown");
 }
 
+/**
+ * Format MAC addresses of the packet
+ * @param ether_shost ethernet source address
+ * @param ether_dhost ethernet destination address
+ * @return pair of source and destination MAC addresses
+ */
 std::pair<std::string, std::string> format_mac(uint8_t *ether_shost, uint8_t *ether_dhost) {
     std::stringstream src_mac_ss;
     std::stringstream dst_mac_ss;
@@ -171,6 +193,12 @@ std::pair<std::string, std::string> format_mac(uint8_t *ether_shost, uint8_t *et
     return std::make_pair(src_mac_ss.str(), dst_mac_ss.str());
 }
 
+/**
+ * Format ports of the packet
+ * @param packet packet
+ * @param ether_type ether type
+ * @return pair of source and destination ports
+ */
 std::pair<int, int> *format_ports(const u_char *packet, uint16_t ether_type) {
     std::pair<int, int> *ports = nullptr;
 
@@ -189,6 +217,11 @@ std::pair<int, int> *format_ports(const u_char *packet, uint16_t ether_type) {
     return ports;
 }
 
+/**
+ * Print payload of the packet
+ * @param packet packet
+ * @param size size of the packet
+ */
 void print_payload(const u_char *packet, uint32_t size) {
     uint32_t i = 0;
 
@@ -216,6 +249,12 @@ void print_payload(const u_char *packet, uint32_t size) {
     }
 }
 
+/**
+ * Handler for each packet
+ * @param args arguments
+ * @param header header of the packet
+ * @param packet packet
+ */
 void packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char *packet) {
     auto *eth_header = (struct ether_header *) packet;
 
@@ -244,6 +283,10 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char
     std::cout << std::endl;
 }
 
+/**
+ * Init pcap and start sniffing
+ * @param arguments arguments of the sniffer
+ */
 void sniff(argparse::ArgumentParser *arguments) {
     auto interface = arguments->get<std::string>("interface");
 

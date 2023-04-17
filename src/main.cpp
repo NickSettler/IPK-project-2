@@ -14,78 +14,95 @@
 #include "filter_tree.h"
 
 std::string generate_filter(argparse::ArgumentParser *arguments) {
-    FilterTree filterTree(FILTER_TREE_TYPE_OR);
+    auto *filterTree = new FilterTree(FILTER_TREE_TYPE_OR);
 
-    //    bool has_tcp = arguments->get<bool>("--tcp");
-    //    bool has_udp = arguments->get<bool>("--udp");
-    //
-    //    if (has_tcp && has_udp || (!has_tcp && !has_udp)) {
-    //        filter.append("tcp or udp");
-    //    } else if (has_tcp) {
-    //        filter.append("tcp");
-    //    } else if (has_udp) {
-    //        filter.append("udp");
-    //    }
+    int port = arguments->get<int>("--port");
+    bool has_tcp = arguments->get<bool>("--tcp");
+    bool has_udp = arguments->get<bool>("--udp");
+
+    if (port != 0) {
+        auto *portFilterTree = new FilterTree(FILTER_TREE_TYPE_AND);
+
+        portFilterTree->add_child(new FilterTree(new std::string("port " + std::to_string(port))));
+
+        auto *portProtocolFilterTree = new FilterTree(FILTER_TREE_TYPE_OR);
+        if ((has_tcp && has_udp) || (!has_tcp && !has_udp)) {
+            portProtocolFilterTree->add_child(new FilterTree(new std::string("tcp")));
+            portProtocolFilterTree->add_child(new FilterTree(new std::string("udp")));
+        } else if (has_tcp) {
+            portProtocolFilterTree->add_child(new FilterTree(new std::string("tcp")));
+        } else if (has_udp) {
+            portProtocolFilterTree->add_child(new FilterTree(new std::string("udp")));
+        }
+
+        portFilterTree->add_child(portProtocolFilterTree);
+
+        filterTree->add_child(portFilterTree);
+    } else {
+        if (has_tcp) { filterTree->add_child(new FilterTree(new std::string("tcp"))); }
+
+        if (has_udp) { filterTree->add_child(new FilterTree(new std::string("udp"))); }
+    }
 
     bool has_icmp4 = arguments->get<bool>("--icmp4");
 
-    if (has_icmp4) { filterTree.add_child(new FilterTree(new std::string("icmp"))); }
+    if (has_icmp4) { filterTree->add_child(new FilterTree(new std::string("icmp"))); }
 
     bool has_icmp6 = arguments->get<bool>("--icmp6");
 
     if (has_icmp6) {
-        FilterTree icmp6EchoReqResFilterTree(FILTER_TREE_TYPE_AND);
+        auto *icmp6EchoReqResFilterTree = new FilterTree(FILTER_TREE_TYPE_AND);
 
-        icmp6EchoReqResFilterTree.add_child(new FilterTree(new std::string("and")));
-        icmp6EchoReqResFilterTree.add_child(new FilterTree(FILTER_TREE_TYPE_OR));
-        icmp6EchoReqResFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 128")));
-        icmp6EchoReqResFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 129")));
+        icmp6EchoReqResFilterTree->add_child(new FilterTree(new std::string("icmp6")));
+        icmp6EchoReqResFilterTree->add_child(new FilterTree(FILTER_TREE_TYPE_OR));
+        icmp6EchoReqResFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 128")));
+        icmp6EchoReqResFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 129")));
 
-        filterTree.add_child(&icmp6EchoReqResFilterTree);
+        filterTree->add_child(icmp6EchoReqResFilterTree);
     }
 
     bool has_arp = arguments->get<bool>("--arp");
 
-    if (has_arp) { filterTree.add_child(new FilterTree(new std::string("arp"))); }
+    if (has_arp) { filterTree->add_child(new FilterTree(new std::string("arp"))); }
 
     bool has_ndp = arguments->get<bool>("--ndp");
 
     if (has_ndp) {
-        FilterTree ndpFilterTree(FILTER_TREE_TYPE_AND);
+        auto *ndpFilterTree = new FilterTree(FILTER_TREE_TYPE_AND);
 
-        ndpFilterTree.add_child(new FilterTree(new std::string("icmp6")));
-        ndpFilterTree.add_child(new FilterTree(FILTER_TREE_TYPE_OR));
-        ndpFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 133")));
-        ndpFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 134")));
-        ndpFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 135")));
-        ndpFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 136")));
-        ndpFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 137")));
-        ndpFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 148")));
-        ndpFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 149")));
+        ndpFilterTree->add_child(new FilterTree(new std::string("icmp6")));
+        ndpFilterTree->add_child(new FilterTree(FILTER_TREE_TYPE_OR));
+        ndpFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 133")));
+        ndpFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 134")));
+        ndpFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 135")));
+        ndpFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 136")));
+        ndpFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 137")));
+        ndpFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 148")));
+        ndpFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 149")));
 
-        filterTree.add_child(&ndpFilterTree);
+        filterTree->add_child(ndpFilterTree);
     }
 
     bool has_igmp = arguments->get<bool>("--igmp");
 
-    if (has_igmp) { filterTree.add_child(new FilterTree(new std::string("igmp"))); }
+    if (has_igmp) { filterTree->add_child(new FilterTree(new std::string("igmp"))); }
 
     bool has_mld = arguments->get<bool>("--mld");
 
     if (has_mld) {
-        FilterTree mldFilterTree(FILTER_TREE_TYPE_AND);
+        auto *mldFilterTree = new FilterTree(FILTER_TREE_TYPE_AND);
 
-        mldFilterTree.add_child(new FilterTree(new std::string("icmp6")));
-        mldFilterTree.add_child(new FilterTree(FILTER_TREE_TYPE_OR));
-        mldFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 130")));
-        mldFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 131")));
-        mldFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 132")));
-        mldFilterTree.get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 143")));
+        mldFilterTree->add_child(new FilterTree(new std::string("icmp6")));
+        mldFilterTree->add_child(new FilterTree(FILTER_TREE_TYPE_OR));
+        mldFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 130")));
+        mldFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 131")));
+        mldFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 132")));
+        mldFilterTree->get_children()->at(1)->add_child(new FilterTree(new std::string("icmp6[0] == 143")));
 
-        filterTree.add_child(&mldFilterTree);
+        filterTree->add_child(mldFilterTree);
     }
 
-    return filterTree.generate_filter();
+    return filterTree->generate_filter();
 }
 
 std::string format_timestamp(const struct timeval &timestamp) {

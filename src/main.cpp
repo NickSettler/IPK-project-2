@@ -146,6 +146,23 @@ std::pair<std::string, std::string> format_ip_addresses(u_char *packet, uint16_t
     return std::make_pair("unknown", "unknown");
 }
 
+std::pair<std::string, std::string> format_mac(uint8_t *ether_shost, uint8_t *ether_dhost) {
+    std::stringstream src_mac_ss;
+    std::stringstream dst_mac_ss;
+
+    for (int i = 0; i < 6; i++) {
+        src_mac_ss << std::hex << std::setw(2) << std::setfill('0') << (int) ether_shost[i];
+        dst_mac_ss << std::hex << std::setw(2) << std::setfill('0') << (int) ether_dhost[i];
+
+        if (i < 5) {
+            src_mac_ss << ":";
+            dst_mac_ss << ":";
+        }
+    }
+
+    return std::make_pair(src_mac_ss.str(), dst_mac_ss.str());
+}
+
 std::pair<int, int> *format_ports(const u_char *packet, uint16_t ether_type) {
     std::pair<int, int> *ports = nullptr;
 
@@ -195,10 +212,11 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char
     auto *eth_header = (struct ether_header *) packet;
 
     auto ip_addresses = format_ip_addresses((u_char *) packet, eth_header->ether_type);
+    auto mac_addresses = format_mac(eth_header->ether_shost, eth_header->ether_dhost);
 
     std::cout << "timestamp: " << format_timestamp(header->ts) << std::endl;
-    std::cout << "src MAC: " << ether_ntoa((struct ether_addr *) eth_header->ether_shost) << std::endl;
-    std::cout << "dst MAC: " << ether_ntoa((struct ether_addr *) eth_header->ether_dhost) << std::endl;
+    std::cout << "src MAC: " << mac_addresses.first << std::endl;
+    std::cout << "dst MAC: " << mac_addresses.second << std::endl;
     std::cout << "frame length: " << std::dec << header->len << " bytes" << std::endl;
 
     std::cout << "src IP: " << ip_addresses.first << std::endl;
@@ -210,6 +228,8 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char
         std::cout << "src port: " << ports->first << std::endl;
         std::cout << "dst port: " << ports->second << std::endl;
     }
+
+    std::cout << std::endl;
 
     print_payload(packet, header->len);
 

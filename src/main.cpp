@@ -248,7 +248,6 @@ void sniff(argparse::ArgumentParser *arguments) {
     auto interface = arguments->get<std::string>("interface");
 
     try {
-
         is_device_valid(interface);
     } catch (...) {
         std::cout << "Invalid interface: " << interface << std::endl;
@@ -301,7 +300,12 @@ int main(int argc, char *argv[]) {
 
     auto interface = arguments->get<std::string>("-i");
 
-    if (interface == "-") {
+    bool has_any_options =
+            arguments->get<int>("-p") != 0 || arguments->get<bool>("--tcp") || arguments->get<bool>("--udp") ||
+            arguments->get<bool>("--icmp4") || arguments->get<bool>("--icmp6") || arguments->get<bool>("--arp") ||
+            arguments->get<bool>("--ndp") || arguments->get<bool>("--igmp") || arguments->get<bool>("--mld");
+
+    if (interface == "-" && !has_any_options) {
         print_interfaces();
         return 0;
     }

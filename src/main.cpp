@@ -217,7 +217,11 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char
 }
 
 void sniff(argparse::ArgumentParser *arguments) {
-    char *device = "en0";
+    auto interface = arguments->get<std::string>("interface");
+    
+    is_device_valid(interface);
+
+    const char *device = interface.c_str();
     char errbuf[PCAP_ERRBUF_SIZE];
     bpf_u_int32 subnet_mask, ip;
 

@@ -160,7 +160,7 @@ capture on multiple protocols and error handling.
 
 ### Example of tests
 
-Test case: `tests/tcp/01-port-specified-1-packet`
+#### Test case: `tests/tcp/01-port-specified-1-packet`
 
 Run the test:
 
@@ -192,6 +192,65 @@ dst port: 22
 WireShark screenshot with the packet number:
 
 ![01-port-specified-1-packet.png](tests/tcp/01-port-specified-1-packet.png)
+
+#### Test case: `tests/arp/01-1-packet`
+
+Run the test:
+
+```sh
+./ipk-sniffer -i en0 --arp
+```
+
+Actual output:
+
+```
+timestamp: 2023-04-17T14:24:29.076+02:00
+src MAC: 98:77:e7:50:60:5e
+dst MAC: b0:be:83:4a:c4:b0
+frame length: 52 bytes
+src IP: 192.168.1.138
+dst IP: 192.168.1.17
+
+0x0000: b0 be 83 4a c4 b0 98 77 e7 50 60 5e 08 06 00 01  ...J...w.P`^....
+0x0010: 08 00 06 04 00 01 98 77 e7 50 60 5e c0 a8 01 8a  .......w.P`^....
+0x0020: 00 00 00 00 00 00 c0 a8 01 11 00 00 00 00 00 00  ................
+0x0030: 00 00 00 00                                      ....
+```
+
+WireShark screenshot with the packet number:
+
+![01-arp.png](tests/arp/01-1-packet.png)
+
+#### Test case: `tests/icmp4/01-1-packet`
+
+Run the test:
+
+```sh
+./ipk-sniffer -i en0 --icmp4
+```
+
+Actual output:
+
+```
+timestamp: 2023-04-17T14:19:06.987+02:00
+src MAC: b0:be:83:4a:c4:b0
+dst MAC: 94:08:53:2e:50:cb
+frame length: 98 bytes
+src IP: 192.168.1.17
+dst IP: 192.168.1.49
+
+0x0000: 94 08 53 2e 50 cb b0 be 83 4a c4 b0 08 00 45 00  ..S.P....J....E.
+0x0010: 00 54 57 b6 00 00 40 01 9f 60 c0 a8 01 11 c0 a8  .TW...@..`......
+0x0020: 01 31 08 00 d8 5d 84 af 00 17 64 3d 39 3a 00 0f  .1...]....d=9:..
+0x0030: 12 52 08 09 0a 0b 0c 0d 0e 0f 10 11 12 13 14 15  .R..............
+0x0040: 16 17 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23 24 25  .......... !"#$%
+0x0050: 26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33 34 35  &'()*+,-./012345
+0x0060: 36 37                                            67
+```
+
+WireShark screenshot with the packet number:
+
+![01-icmp4.png](tests/icmp4/01-1-packet.png)
 
 ## Bibliography
 

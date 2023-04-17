@@ -142,7 +142,7 @@ following structure:
 
 - `[ii]-[test_name].sh` - script that runs the test
 - `[ii]-[test_name].out` - actual output of the test
-- `[ii]-[test_name].[n].png` - screenshot from wireshark with the packet
+- `[ii]-[test_name].[n].jpg` - screenshot from wireshark with the packet
   number `n`
 
 Protocols NDP, IGMP and MLD have not been tested because their capture did not
